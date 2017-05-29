@@ -1,0 +1,21 @@
+{
+    "name": "php-couchdb/php-couchdb",
+    "description": "Library for easily talking to CouchDB from PHP",
+    "type": "library",
+    "license": "Apache",
+    "authors": [
+        {
+            "name": "Lorna Jane Mitchell",
+            "email": "lorna@lornajane.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"PHPCouchDB\\": "src/PHPCouchDB"}
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^6.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
+    }
+}
