@@ -1,3 +1,4 @@
 language: php
+install: composer install
 script: composer test
 before_script: composer phpcs
