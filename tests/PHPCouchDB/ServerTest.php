@@ -13,7 +13,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetVersion() {
 
-		$couchdb1 = '{"couchdb":"Welcome","uuid":"fce3d5aabfe189c988273c0ffa8d375b","version":"6.6.0","vendor":{"name":"Ubuntu","version":"15.10"}}';
+		$couchdb1 = '{"couchdb":"Welcome","uuid":"fce3d5aabfe189c988273c0ffa8d375b","version":"1.6.0","vendor":{"name":"Ubuntu","version":"15.10"}}';
 		$response1 = new Response(200, [], $couchdb1);
 
 		// Create a mock and queue two responses.
