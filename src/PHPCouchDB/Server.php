@@ -1,6 +1,16 @@
 <?php
 
+/**
+ * Server-related features
+ */
+
 namespace PHPCouchDB;
+
+/**
+ * Server class deals with operations on the server level, rather than specific
+ * to a particular database
+ */
+
 
 class Server
 {
@@ -15,7 +25,12 @@ class Server
         }
     }
 
-    public function getVersion()
+    /**
+     * Ask the CouchDB server what version it is running
+     *
+     * @return string Version, e.g. "2.0.1"
+     */
+    public function getVersion() : string
     {
         $response = $this->client->request("GET", "/");
         if ($response->getStatusCode() == 200) {
