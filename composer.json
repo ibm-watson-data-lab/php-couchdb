@@ -1,5 +1,5 @@
 {
-    "name": "php-couchdb/php-couchdb",
+    "name": "ibm-watson-data-lab/php-couchdb",
     "description": "Library for easily talking to CouchDB from PHP",
     "type": "library",
     "license": "Apache",
