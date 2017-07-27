@@ -46,4 +46,18 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals("1.6.0", $server->getVersion());
 
     }
+
+    public function testGetAllDbs() {
+        $dbs = ["test", "items"];
+        $response1 = new Response(200, [], json_encode($dbs));
+
+        $mock = new MockHandler([ $response1 ]);
+		$handler = HandlerStack::create($mock);
+		$client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
+		$this->assertEquals($dbs, $server->getAllDbs());
+
+    }
 }

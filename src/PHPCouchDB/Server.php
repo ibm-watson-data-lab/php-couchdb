@@ -66,4 +66,21 @@ class Server
             }
         }
     }
+
+    /**
+     * Get a list of databases
+     *
+     * @return array The database names
+     */
+    public function getAllDbs() {
+        $response = $this->client->request("GET", "/_all_dbs");
+        if ($response->getStatusCode() == 200) {
+            // try to decode JSON
+            if ($json_data = json_decode($response->getBody(), true)) {
+                return $json_data;
+            } else {
+                throw new Exception('JSON response not received or not understood');
+            }
+        }
+    }
 }
