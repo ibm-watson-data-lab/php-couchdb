@@ -25,22 +25,6 @@ $server = new \PHPCouchDB\Server(["url" => "http://localhost:5984"]);
 echo $server->getVersion();
 ```
 
-If you need any additional configuration of the HTTP connection, then you can supply a `"client"` element to the constructor's array argument, and pass any `\GuzzleHttp\ClientInterface` object to that.  Check the [documentation of Guzzle Request Options](http://docs.guzzlephp.org/en/stable/request-options.html) as all of these can also be passed in the constructor of the `\GuzzleHttp\Client`.
-
-```php
-<?php
-
-require "vendor/autoload.php";
-
-$client = new \GuzzleHttp\Client([
-    "base_uri" => "http://localhost:5984"
-    // set any other options here
-]);
-
-$server = new \PHPCouchDB\Server(["client" => $client]);
-echo $server->getVersion();
-```
-
 ## For Developers
 
 Contributions and issues are all _very_ welcome on this project - and of course we'd love to hear how you're using the library in your own projects.
