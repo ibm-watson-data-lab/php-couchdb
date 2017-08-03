@@ -55,6 +55,7 @@ class Server
      * Ask the CouchDB server what version it is running
      *
      * @return string Version, e.g. "2.0.1"
+     * @throws \PHPCouchDB\Exception\ServerException if there's a problem with parsing arguments or creating the client
      */
     public function getVersion() : string
     {
@@ -68,7 +69,7 @@ class Server
                     return "unknown";
                 }
             } else {
-                throw new Exception('JSON response not received or not understood');
+                throw new \PHPCouchDB\Exception\ServerException('JSON response not received or not understood');
             }
         }
     }
@@ -77,8 +78,9 @@ class Server
      * Get a list of databases
      *
      * @return array The database names
+     * @throws \PHPCouchDB\Exception\ServerException if there's a problem with parsing arguments or creating the client
      */
-    public function getAllDbs()
+    public function getAllDbs() : array
     {
         $response = $this->client->request("GET", "/_all_dbs");
         if ($response->getStatusCode() == 200) {
@@ -86,8 +88,57 @@ class Server
             if ($json_data = json_decode($response->getBody(), true)) {
                 return $json_data;
             } else {
-                throw new Exception('JSON response not received or not understood');
+                throw new \PHPCouchDB\Exception\ServerException('JSON response not received or not understood');
             }
         }
+    }
+
+    /**
+     * Create and return a Database object to work with
+     *
+     * @param $options Supply the "name" (required) and an optional boolean
+     *  "create_if_not_exists" value (default is false)
+     * @return \CouchDB\Database represents the named database
+     * @throws \PHPCouchDB\Exception\ServerException if there's a problem
+     *  with parsing arguments or creating the database object (e.g. database
+     *  doesn't exist and shouldn't be created)
+     */
+    public function useDb($options) : \PHPCouchDB\Database
+    {
+        // check the $options array is sane
+        if (!isset($options['name'])) {
+            throw new \PHPCouchDB\Exception\ServerException(
+                '"name" is a required $options parameter'
+            );
+        } else {
+            $db_name = $options['name'];
+        }
+
+        $create_if_not_exists = isset($options['create_if_not_exists']) ? $options['create_if_not_exists'] : false;
+
+        // does this database exist?
+        $exists = false;
+        try {
+            $response = $this->client->request("GET", "/" . $db_name);
+            if ($response->getStatusCode() == 200) {
+                $exists = true;
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            // it doesn't exist, should we create it?
+            if ($create_if_not_exists) {
+                $create_response = $this->client->request("PUT", "/" . $db_name);
+                if ($create_response->getStatusCode() == 201) {
+                    $exists = true;
+                }
+            }
+        }
+
+        if ($exists) {
+            return new \PHPCouchDB\Database(["client" => $this->client, "db_name" => $db_name]);
+        }
+
+        throw new \PHPCouchDB\Exception\ServerException(
+            'Database doesn\'t exist, include "create_if_not_exists" parameter to create it'
+        );
     }
 }
