@@ -141,4 +141,15 @@ class Server
             'Database doesn\'t exist, include "create_if_not_exists" parameter to create it'
         );
     }
+
+    /**
+     * If you need to make a request that isn't supported by this library,
+     * use this method to get the client to use.  Aimed at more advanced
+     * users/requirements
+     */
+    public function getClient() : \GuzzleHttp\ClientInterface
+    {
+        return $this->client;
+    }
+
 }
