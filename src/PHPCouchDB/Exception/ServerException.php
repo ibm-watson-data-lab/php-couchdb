@@ -2,6 +2,6 @@
 
 namespace PHPCouchDB\Exception;
 
-class ServerException {
+class ServerException
+{
 }
-

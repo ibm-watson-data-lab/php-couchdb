@@ -28,20 +28,26 @@ class Server
      */
     public function __construct(array $options)
     {
-        if(empty($options) || !is_array($options)) {
-            throw new \PHPCouchDB\Exception\ServerException('$options is a required parameter, array should contain either a url or a client');
+        if (empty($options) || !is_array($options)) {
+            throw new \PHPCouchDB\Exception\ServerException(
+                '$options is a required parameter, array should contain either a url or a client'
+            );
         }
 
-        if(isset($options['client']) && $options['client'] instanceof \GuzzleHttp\ClientInterface) {
+        if (isset($options['client']) && $options['client'] instanceof \GuzzleHttp\ClientInterface) {
             $this->client = $options['client'];
-        } elseif(isset($options['url'])) {
+        } elseif (isset($options['url'])) {
             try {
                 $this->client = new \GuzzleHttp\Client(["base_uri" => $options['url']]);
-            } catch(Exception $e) {
-                throw new \PHPCouchDB\Exception\ServerException("Could not connect with URL.  Error: " . $e->getMessage());
+            } catch (Exception $e) {
+                throw new \PHPCouchDB\Exception\ServerException(
+                    "Could not connect with URL.  Error: " . $e->getMessage()
+                );
             }
         } else {
-            throw new \PHPCouchDB\Exception\ServerException('Failed to parse $options, array should contain either a url or a client');
+            throw new \PHPCouchDB\Exception\ServerException(
+                'Failed to parse $options, array should contain either a url or a client'
+            );
         }
     }
 
@@ -72,7 +78,8 @@ class Server
      *
      * @return array The database names
      */
-    public function getAllDbs() {
+    public function getAllDbs()
+    {
         $response = $this->client->request("GET", "/_all_dbs");
         if ($response->getStatusCode() == 200) {
             // try to decode JSON
