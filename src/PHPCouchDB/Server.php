@@ -52,10 +52,10 @@ class Server
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
             throw new \PHPCouchDB\Exception\ServerException(
                 "Could not connect to database.  Error: " . $e->getMessage(),
-                0, $e
+                0,
+                $e
             );
         }
-
     }
 
     /**
