@@ -52,4 +52,31 @@ class Database
             );
         }
     }
+
+    /**
+     * Fetch all the documents from the database
+     *
+     * @param array $options  Any modifiers needed for the query  These include:
+     *      - include_docs   Defaults to true
+     * @return array The array contains `PHPCouchDB\Document` objects
+     */
+    public function getAllDocs($options = []) : array
+    {
+        $endpoint = "/" . $this->db_name . "/_all_docs";
+        $query = ["include_docs" => "true"];
+        $response = $this->client->request("GET", $endpoint, ["query" => $query]);
+        if ($response->getStatusCode() == 200) {
+            // try to decode JSON
+            if ($json_data = json_decode($response->getBody(), true)) {
+                // we have some data - extract the docs to return
+                $docs = [];
+                foreach ($json_data["rows"] as $document) {
+                    $docs[] = new Document($document["doc"]);
+                }
+                return $docs;
+            } else {
+                throw new \PHPCouchDB\Exception\ServerException('JSON response not received or not understood');
+            }
+        }
+    }
 }

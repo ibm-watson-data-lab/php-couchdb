@@ -158,5 +158,4 @@ class Server
     {
         return $this->client;
     }
-
 }
