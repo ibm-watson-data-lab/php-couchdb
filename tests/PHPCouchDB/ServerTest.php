@@ -118,4 +118,15 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$server = new \PHPCouchDB\Server(["client" => $client]);
 		$this->assertInstanceOf("\PHPCouchDB\Database", $server->useDb(["name" => "egdb", "create_if_not_exists" => true]));
     }
+
+    public function testGetClient() {
+		$mock = new MockHandler([ $this->db_response ]);
+
+		$handler = HandlerStack::create($mock);
+		$client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
+		$this->assertInstanceOf("\GuzzleHttp\ClientInterface", $server->getClient());
+    }
 }
