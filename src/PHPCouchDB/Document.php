@@ -53,4 +53,42 @@ class Document
         unset($result['database']);
         return $result;
     }
+
+    /**
+     * Saves the current state of the document, returning a NEW object to
+     * represent the new document revision.  If the doc is outdated, the update
+     * fails.
+     *
+     * @return Document The updated doc
+     * @throws \PHPCouchDB\Exception\DocumentConflictException if the update
+     *  fails because we don't have the (correct) revision number
+     * @throws \PHPCouchDB\Exception\DatabaseExecption if something else goes
+     *  wrong, with the previous exception included
+     */
+    public function update()
+    {
+        $endpoint = "/" . $this->database->getName() . "/" . $this->id;
+
+        // take a copy and drop out the internal values before sending
+        $doc = get_object_vars($this);
+        $doc['_rev'] = $doc['rev'];
+        unset($doc['client']);
+        unset($doc['id']);
+        unset($doc['rev']);
+        unset($doc['database']);
+
+        try {
+            $response = $this->client->request('PUT', $endpoint, ["json" => $doc]);
+            // get a brand new version and return it as a brand new object
+            $newrev = $this->database->getDocById($this->id);
+            return $newrev;
+        } catch (\GuzzleHTTP\Exception\ClientException $e) {
+            // is it a conflict?  Or something else?
+            if($e->getResponse()->getStatusCode() == 409) {
+                throw new Exception\DocumentConflictException('Conflict. Outdated or missing revision information');
+            } else {
+                throw new Exception\DatabseException('The update failed', 0, $e);
+            }
+        }
+    }
 }

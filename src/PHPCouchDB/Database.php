@@ -33,6 +33,34 @@ class Database
     }
 
     /**
+     * Get the name of the database
+     */
+    public function getName() : string
+    {
+        return $this->db_name;
+    }
+
+    /**
+     * If you need to make a request that isn't supported by this library,
+     * use this method to get the client to use.  Aimed at more advanced
+     * users/requirements
+     */
+    public function getClient() : \GuzzleHttp\ClientInterface
+    {
+        return $this->client;
+    }
+
+    /**
+     * Format object for var_dump(), removing large properties
+     */
+    public function __debugInfo()
+    {
+        $result = get_object_vars($this);
+        unset($result['client']);
+        return $result;
+    }
+
+    /**
      * Fetch all the documents from the database
      *
      * @param array $options  Any modifiers needed for the query  These include:
