@@ -141,7 +141,7 @@ class Server
         }
 
         if ($exists) {
-            return new \PHPCouchDB\Database(["client" => $this->client, "db_name" => $db_name]);
+            return new Database($this->client, $db_name);
         }
 
         throw new \PHPCouchDB\Exception\ServerException(
