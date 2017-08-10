@@ -84,7 +84,7 @@ class Document
             return $newrev;
         } catch (\GuzzleHTTP\Exception\ClientException $e) {
             // is it a conflict?  Or something else?
-            if($e->getResponse()->getStatusCode() == 409) {
+            if ($e->getResponse()->getStatusCode() == 409) {
                 throw new Exception\DocumentConflictException('Conflict. Outdated or missing revision information');
             } else {
                 throw new Exception\DatabseException('The update failed', 0, $e);

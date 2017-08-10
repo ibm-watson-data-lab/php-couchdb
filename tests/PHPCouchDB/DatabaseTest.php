@@ -123,4 +123,30 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf('PHPCouchDB\Document', $fetched_doc);
         $this->assertObjectHasAttribute('id', $fetched_doc);
     }
+
+    public function testGetName() {
+		$mock = new MockHandler([ $this->db_response, $this->use_response ]);
+
+		$handler = HandlerStack::create($mock);
+		$client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
+        $database = $server->useDB(["name" => "egdb"]);
+
+        $this->assertInternalType('string', $database->getName());
+    }
+
+    public function testGetClient() {
+		$mock = new MockHandler([ $this->db_response, $this->use_response ]);
+
+		$handler = HandlerStack::create($mock);
+		$client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
+        $database = $server->useDB(["name" => "egdb"]);
+
+        $this->assertInstanceOf('\GuzzleHttp\ClientInterface', $database->getClient());
+    }
 }
