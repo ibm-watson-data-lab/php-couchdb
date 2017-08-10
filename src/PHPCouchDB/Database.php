@@ -54,7 +54,7 @@ class Database
                 }
                 return $docs;
             } else {
-                throw new \PHPCouchDB\Exception\ServerException('JSON response not received or not understood');
+                throw new Exception\ServerException('JSON response not received or not understood');
             }
         }
     }
@@ -71,7 +71,7 @@ class Database
     public function create($doc)
     {
         if (!is_array($doc)) {
-            throw new \PHPCouchDB\Exception\DatabaseException('A document is required, in array format');
+            throw new Exception\DatabaseException('A document is required, in array format');
         }
 
         // do we have the ID?
@@ -93,10 +93,10 @@ class Database
                 $id = $response_data['id'];
                 // all good.  Let's fetch the doc and return it
                 $fetched_data = json_decode($this->client->get('/' . $this->db_name . '/' . $id)->getBody());
-                return new \PHPCouchDB\Document($fetched_data);
+                return new Document($this->client, $this->db_name, $fetched_data);
             }
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
-            throw new \PHPCouchDB\Exception\ServerException(
+            throw new Exception\ServerException(
                 "Could not create record.  Error: " . $e->getMessage(),
                 0,
                 $e
@@ -112,7 +112,7 @@ class Database
      * @throws PHPCouchDB\Exception\ServerException if the response can't be understood
      * @throws PHPCouchDB\Exception\DatabaseException if the doc isn't found
      */
-    public function getDocById($id) : \PHPCouchDB\Document
+    public function getDocById($id) : Document
     {
         $endpoint = "/" . $this->db_name . "/" . $id;
         $response = $this->client->request("GET", $endpoint);
@@ -121,10 +121,10 @@ class Database
                 $doc = new Document($this->client, $this->db_name, $data);
                 return $doc;
             } else {
-                throw new \PHPCouchDB\Exception\ServerException('JSON response not received or not understood');
+                throw new Exception\ServerException('JSON response not received or not understood');
             }
         } else {
-            throw new \PHPCouchDB\Exception\DatabaseException('Document not found');
+            throw new Exception\DatabaseException('Document not found');
         }
     }
 }
