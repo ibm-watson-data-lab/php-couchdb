@@ -16,20 +16,19 @@ namespace PHPCouchDB;
 class Document
 {
     protected $client;
-    protected $db_name;
+    protected $database;
 
     /**
      * Usually constructed by the Database object as it gets documents for us
      *
-     * @param \GuzzleHTTP\ClientInterface $client Our HTTP client
-     * @param string $db_name The database this document is in
+     * @param \PHPCouchDB\Database $database The database this document is in
      * @param array $data Representation of the document
      */
 
-    public function __construct(\GuzzleHttp\ClientInterface $client, string $db_name, array $data)
+    public function __construct(Database $database, array $data)
     {
-        $this->client  = $client;
-        $this->db_name = $db_name;
+        $this->database = $database;
+        $this->client  = $database->getClient();
         // possibly overly simple!
         // Add all array elements as properties on the new object
         foreach ($data as $field => $value) {
@@ -44,13 +43,14 @@ class Document
     }
 
     /**
-     * Format object for var_dump() - removes the $client property
+     * Format object for var_dump(), removing large properties
      */
     public function __debugInfo()
     {
-        // remove the $client object because the output is HUGE
+        // remove the $database property because the output is HUGE
         $result = get_object_vars($this);
         unset($result['client']);
+        unset($result['database']);
         return $result;
     }
 }

@@ -50,7 +50,7 @@ class Database
                 // we have some data - extract the docs to return
                 $docs = [];
                 foreach ($json_data["rows"] as $document) {
-                    $docs[] = new Document($this->client, $this->db_name, $document["doc"]);
+                    $docs[] = new Document($this, $document["doc"]);
                 }
                 return $docs;
             } else {
@@ -93,7 +93,7 @@ class Database
                 $id = $response_data['id'];
                 // all good.  Let's fetch the doc and return it
                 $fetched_data = json_decode($this->client->get('/' . $this->db_name . '/' . $id)->getBody(), true);
-                return new Document($this->client, $this->db_name, $fetched_data);
+                return new Document($this, $fetched_data);
             }
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
             throw new Exception\ServerException(
@@ -118,7 +118,7 @@ class Database
         $response = $this->client->request("GET", $endpoint);
         if ($response->getStatusCode() == 200) {
             if ($data = json_decode($response->getBody(), true)) {
-                $doc = new Document($this->client, $this->db_name, $data);
+                $doc = new Document($this, $data);
                 return $doc;
             } else {
                 throw new Exception\ServerException('JSON response not received or not understood');
