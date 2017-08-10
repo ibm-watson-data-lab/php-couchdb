@@ -124,4 +124,28 @@ class Database
             );
         }
     }
+
+    /**
+     * Get a document whose ID you know
+     *
+     * @param string $id The doc's unique identifier
+     * @return PHPCouchDB\Document The doc with the specified ID
+     * @throws PHPCouchDB\Exception\ServerException if the response can't be understood
+     * @throws PHPCouchDB\Exception\DatabaseException if the doc isn't found
+     */
+    public function getDocById($id) : \PHPCouchDB\Document
+    {
+        $endpoint = "/" . $this->db_name . "/" . $id;
+        $response = $this->client->request("GET", $endpoint);
+        if ($response->getStatusCode() == 200) {
+            if ($json_data = json_decode($response->getBody(), true)) {
+                $doc = new Document($json_data);
+                return $doc;
+            } else {
+                throw new \PHPCouchDB\Exception\ServerException('JSON response not received or not understood');
+            }
+        } else {
+            throw new \PHPCouchDB\Exception\DatabaseException('Document not found');
+        }
+    }
 }
