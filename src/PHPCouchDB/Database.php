@@ -50,7 +50,7 @@ class Database
                 // we have some data - extract the docs to return
                 $docs = [];
                 foreach ($json_data["rows"] as $document) {
-                    $docs[] = new Document($document["doc"]);
+                    $docs[] = new Document($this->client, $this->db_name, $document["doc"]);
                 }
                 return $docs;
             } else {
@@ -117,8 +117,8 @@ class Database
         $endpoint = "/" . $this->db_name . "/" . $id;
         $response = $this->client->request("GET", $endpoint);
         if ($response->getStatusCode() == 200) {
-            if ($json_data = json_decode($response->getBody(), true)) {
-                $doc = new Document($json_data);
+            if ($data = json_decode($response->getBody(), true)) {
+                $doc = new Document($this->client, $this->db_name, $data);
                 return $doc;
             } else {
                 throw new \PHPCouchDB\Exception\ServerException('JSON response not received or not understood');
