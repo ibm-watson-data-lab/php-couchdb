@@ -30,7 +30,7 @@ class Server
     public function __construct(array $options)
     {
         if (empty($options) || !is_array($options)) {
-            throw new \PHPCouchDB\Exception\ServerException(
+            throw new Exception\ServerException(
                 '$options is a required parameter, array should contain either a url or a client'
             );
         }
@@ -40,7 +40,7 @@ class Server
         } elseif (isset($options['url'])) {
             $client = new \GuzzleHttp\Client(["base_uri" => $options['url']]);
         } else {
-            throw new \PHPCouchDB\Exception\ServerException(
+            throw new Exception\ServerException(
                 'Failed to parse $options, array should contain either a url or a client'
             );
         }
@@ -50,7 +50,7 @@ class Server
             $client->get('/');
             $this->client = $client;
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
-            throw new \PHPCouchDB\Exception\ServerException(
+            throw new Exception\ServerException(
                 "Could not connect to database.  Error: " . $e->getMessage(),
                 0,
                 $e
@@ -76,7 +76,7 @@ class Server
                     return "unknown";
                 }
             } else {
-                throw new \PHPCouchDB\Exception\ServerException('JSON response not received or not understood');
+                throw new Exception\ServerException('JSON response not received or not understood');
             }
         }
     }
@@ -95,7 +95,7 @@ class Server
             if ($json_data = json_decode($response->getBody(), true)) {
                 return $json_data;
             } else {
-                throw new \PHPCouchDB\Exception\ServerException('JSON response not received or not understood');
+                throw new Exception\ServerException('JSON response not received or not understood');
             }
         }
     }
@@ -110,11 +110,11 @@ class Server
      *  with parsing arguments or creating the database object (e.g. database
      *  doesn't exist and shouldn't be created)
      */
-    public function useDb($options) : \PHPCouchDB\Database
+    public function useDb($options) : Database
     {
         // check the $options array is sane
         if (!isset($options['name'])) {
-            throw new \PHPCouchDB\Exception\ServerException(
+            throw new Exception\ServerException(
                 '"name" is a required $options parameter'
             );
         } else {
@@ -144,7 +144,7 @@ class Server
             return new Database($this->client, $db_name);
         }
 
-        throw new \PHPCouchDB\Exception\ServerException(
+        throw new Exception\ServerException(
             'Database doesn\'t exist, include "create_if_not_exists" parameter to create it'
         );
     }
