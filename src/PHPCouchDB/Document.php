@@ -42,4 +42,15 @@ class Document
             }
         }
     }
+
+    /**
+     * Format object for var_dump() - removes the $client property
+     */
+    public function __debugInfo()
+    {
+        // remove the $client object because the output is HUGE
+        $result = get_object_vars($this);
+        unset($result['client']);
+        return $result;
+    }
 }
