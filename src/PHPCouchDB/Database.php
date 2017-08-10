@@ -92,7 +92,7 @@ class Database
             if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true)) {
                 $id = $response_data['id'];
                 // all good.  Let's fetch the doc and return it
-                $fetched_data = json_decode($this->client->get('/' . $this->db_name . '/' . $id)->getBody());
+                $fetched_data = json_decode($this->client->get('/' . $this->db_name . '/' . $id)->getBody(), true);
                 return new Document($this->client, $this->db_name, $fetched_data);
             }
         } catch (\GuzzleHttp\Exception\ConnectException $e) {

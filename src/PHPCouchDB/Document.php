@@ -25,7 +25,6 @@ class Document
      * @param string $db_name The database this document is in
      * @param array $data Representation of the document
      */
-     */
 
     public function __construct(\GuzzleHttp\ClientInterface $client, string $db_name, array $data)
     {
