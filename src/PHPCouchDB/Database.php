@@ -143,16 +143,22 @@ class Database
     public function getDocById($id) : Document
     {
         $endpoint = "/" . $this->db_name . "/" . $id;
-        $response = $this->client->request("GET", $endpoint);
-        if ($response->getStatusCode() == 200) {
+        try {
+            $response = $this->client->request("GET", $endpoint);
             if ($data = json_decode($response->getBody(), true)) {
                 $doc = new Document($this, $data);
                 return $doc;
             } else {
                 throw new Exception\ServerException('JSON response not received or not understood');
             }
-        } else {
-            throw new Exception\DatabaseException('Document not found');
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $status = $e->getResponse()->getStatusCode();
+            if ($status == 404) {
+                // not really a disaster, the doc just isn't there so throw specific exception
+                throw new Exception\DocumentNotFoundException('Document not found');
+            } else {
+                throw new Exception\DatabaseException('The document could not be retrieved', 0, $e);
+            }
         }
     }
 }
