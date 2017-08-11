@@ -9,7 +9,7 @@ A lightweight library to make it very easy to work with [CouchDB](http://couchdb
 It's recommended to install this library using [Composer](https://getcomposer.org/):
 
 ```
-composer require ibm-watson-data-lab/php-couchdb:~0.1@beta
+composer require ibm-watson-data-lab/php-couchdb
 ```
 
 ## Usage
