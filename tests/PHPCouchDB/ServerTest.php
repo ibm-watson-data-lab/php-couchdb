@@ -12,25 +12,20 @@ use GuzzleHttp\Exception\RequestException;
 class ServerTest extends \PHPUnit\Framework\TestCase 
 {
     public function setUp() {
-        // use some url and client variables
-        $this->url = "http://localhost:5984";
-        $this->client = new \GuzzleHttp\Client(["base_uri" => $this->url]);
-
         // create the first request to check we can connect, can be added to
         // the mocks for any test that wants it
 		$couchdb1 = '{"couchdb":"Welcome","uuid":"fce3d5aabfe189c988273c0ffa8d375b","version":"1.6.0","vendor":{"name":"Ubuntu","version":"15.10"}}';
 		$this->db_response = new Response(200, [], $couchdb1);
     }
 
-    public function testCreateWithURL() {
-        $server = new \PHPCouchDB\Server(["url" => $this->url]);
-
-        $this->assertObjectHasAttribute('client', $server);
-        $this->assertAttributeInstanceOf('\GuzzleHttp\ClientInterface', 'client', $server);
-    }
-
     public function testCreateWithClient() {
-        $server = new \PHPCouchDB\Server(["client" => $this->client]);
+		$mock = new MockHandler([ $this->db_response ]);
+
+		$handler = HandlerStack::create($mock);
+		$client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
 
         $this->assertObjectHasAttribute('client', $server);
         $this->assertAttributeInstanceOf('\GuzzleHttp\ClientInterface', 'client', $server);
