@@ -62,4 +62,4 @@ This project uses [PHPDox](http://phpdox.de/) to generate API documentation.  To
 
 ### Syntax Checks
 
-The syntax checker is [PHP Code Sniffer](https://github.com/squizlabs/PHP_CodeSniffer) adn you can run this with `composer phpcs`
+The syntax checker is [PHP Code Sniffer](https://github.com/squizlabs/PHP_CodeSniffer) and you can run this with `composer phpcs`
