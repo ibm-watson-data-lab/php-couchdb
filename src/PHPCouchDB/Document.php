@@ -65,7 +65,7 @@ class Document
      * @throws \PHPCouchDB\Exception\DatabaseExecption if something else goes
      *  wrong, with the previous exception included
      */
-    public function update()
+    public function update() : Document
     {
         $endpoint = "/" . $this->database->getName() . "/" . $this->id;
 
@@ -88,6 +88,33 @@ class Document
                 throw new Exception\DocumentConflictException('Conflict. Outdated or missing revision information');
             } else {
                 throw new Exception\DatabseException('The update failed', 0, $e);
+            }
+        }
+    }
+
+    public function delete() : bool
+    {
+        $endpoint = "/" . $this->database->getName() . "/" . $this->id;
+        $query = ["rev" => $this->rev];
+
+        try {
+            $response = $this->client->request('DELETE', $endpoint, ["query" => $query]);
+            // if successful, cool
+            return true;
+        } catch (\GuzzleHTTP\Exception\ClientException $e) {
+            // our reaction depends on the status code
+            $status = $e->getResponse()->getStatusCode();
+
+            if ($status == 404) {
+                // a 404 error is fine, means the record is already gone
+                return true;
+            } elseif ($status == 409) {
+                // conflict, we're deleting the wrong version of the doc
+                throw new Exception\DocumentConflictException(
+                    'Document conflict. Only the current document revision can be deleted'
+                );
+            } else {
+                throw new Exception\DatabaseException('The record could not be deleted', 0, $e);
             }
         }
     }

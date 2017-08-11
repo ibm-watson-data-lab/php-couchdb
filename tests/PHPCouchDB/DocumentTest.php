@@ -27,7 +27,7 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
         $this->fetch_response = new Response(200, [], $fetch);
     }
 
-    public function testUpdateConflict() {
+    public function testUpdate() {
         $update = '{"ok":true,"id":"abcde12345","rev":"2-74a0465bd6e3ea40a1a3752b93916762"}';
         $update_response = new Response(200, [], $update);
 
@@ -55,7 +55,7 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
     /**
      * @expectedException \PHPCouchDB\Exception\DocumentConflictException
      */
-    public function testUpdate() {
+    public function testUpdateConflict() {
         $update = '{"error":"conflict","reason":"Document update conflict."}';;
         $update_response = new Response(409, [], $update);
 
@@ -72,4 +72,47 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
         $newdoc = $doc->update();
     }
 
+    public function testDelete() {
+        $delete = '{"ok":true,"id":"abcde12345","rev":"2-74a0465bd6e3ea40a1a3752b93916762"}';
+        $delete_response = new Response(200, [], $delete);
+
+        $fetch3 = '{"error":"not_found","reason":"deleted"}';
+        $fetch_response3 = new Response(404, [], $fetch3);
+
+		$mock = new MockHandler([ $this->db_response, $this->use_response, $this->create_response, $this->fetch_response, $delete_response, $fetch_response3 ]);
+		$handler = HandlerStack::create($mock);
+		$client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
+        $database = $server->useDB(["name" => "egdb"]);
+        $doc = $database->create(["noise" => "howl", "id" => "abcde12345"]);
+
+        $result = $doc->delete();
+        $this->assertEquals(true, $result);
+
+        // should be able to delete an already-deleted doc without errors
+
+        $result = $doc->delete();
+        $this->assertEquals(true, $result);
+    }
+
+    /**
+     * @expectedException \PHPCouchDB\Exception\DocumentConflictException
+     */
+    public function testDeleteConflict() {
+        $delete = '{"error":"conflict","reason":"Document update conflict."}';
+        $delete_response = new Response(409, [], $delete);
+
+		$mock = new MockHandler([ $this->db_response, $this->use_response, $this->create_response, $this->fetch_response, $delete_response ]);
+		$handler = HandlerStack::create($mock);
+		$client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
+        $database = $server->useDB(["name" => "egdb"]);
+        $doc = $database->create(["noise" => "howl", "id" => "abcde12345"]);
+
+        $result = $doc->delete();
+    }
 }
