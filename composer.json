@@ -2,7 +2,7 @@
     "name": "ibm-watson-data-lab/php-couchdb",
     "description": "Library for easily talking to CouchDB from PHP",
     "type": "library",
-    "license": "Apache",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Lorna Jane Mitchell",
