@@ -14,7 +14,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function setUp() {
         // create the first request to check we can connect, can be added to
         // the mocks for any test that wants it
-		$couchdb1 = '{"couchdb":"Welcome","uuid":"fce3d5aabfe189c988273c0ffa8d375b","version":"1.6.0","vendor":{"name":"Ubuntu","version":"15.10"}}';
+        $couchdb1 = '{"couchdb":"Welcome","version":"2.0.0","vendor":{"name":"The Apache Software Foundation"}}';
 		$this->db_response = new Response(200, [], $couchdb1);
 
         // offer a use_response for when selecting this database
