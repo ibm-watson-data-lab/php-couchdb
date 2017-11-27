@@ -18,18 +18,13 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
 
         $create = '{"ok":true,"id":"abcde12345","rev":"1-928ec193918889e122e7ad45cfd88e47"}';
         $this->create_response = new Response(201, [], $create);
-        $fetch = '{"_id":"abcde12345","_rev":"1-928ec193918889e122e7ad45cfd88e47","noise":"howl"}';
-        $this->fetch_response = new Response(200, [], $fetch);
     }
 
     public function testUpdate() {
         $update = '{"ok":true,"id":"abcde12345","rev":"2-74a0465bd6e3ea40a1a3752b93916762"}';
-        $update_response = new Response(200, [], $update);
+        $update_response = new Response(201, [], $update);
 
-        $fetch2 = '{"_id":"abcde12345","_rev":"1-928ec193918889e122e7ad45cfd88e47","noise":"howl"}';
-        $fetch_response2 = new Response(200, [], $fetch2);
-
-		$mock = new MockHandler([ $this->use_response, $this->create_response, $this->fetch_response, $update_response, $fetch_response2 ]);
+		$mock = new MockHandler([ $this->use_response, $this->create_response, $update_response ]);
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
 
@@ -54,7 +49,7 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
         $update = '{"error":"conflict","reason":"Document update conflict."}';;
         $update_response = new Response(409, [], $update);
 
-		$mock = new MockHandler([ $this->use_response, $this->create_response, $this->fetch_response, $update_response ]);
+		$mock = new MockHandler([ $this->use_response, $this->create_response, $update_response ]);
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
 
@@ -71,10 +66,10 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
         $delete = '{"ok":true,"id":"abcde12345","rev":"2-74a0465bd6e3ea40a1a3752b93916762"}';
         $delete_response = new Response(200, [], $delete);
 
-        $fetch3 = '{"error":"not_found","reason":"deleted"}';
-        $fetch_response3 = new Response(404, [], $fetch3);
+        $delete2 = '{"error":"not_found","reason":"deleted"}';
+        $delete_response2 = new Response(404, [], $delete2);
 
-		$mock = new MockHandler([ $this->use_response, $this->create_response, $this->fetch_response, $delete_response, $fetch_response3 ]);
+		$mock = new MockHandler([ $this->use_response, $this->create_response, $delete_response, $delete_response2 ]);
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
 
@@ -99,7 +94,7 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
         $delete = '{"error":"conflict","reason":"Document update conflict."}';
         $delete_response = new Response(409, [], $delete);
 
-		$mock = new MockHandler([ $this->use_response, $this->create_response, $this->fetch_response, $delete_response ]);
+		$mock = new MockHandler([ $this->use_response, $this->create_response, $delete_response ]);
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
 

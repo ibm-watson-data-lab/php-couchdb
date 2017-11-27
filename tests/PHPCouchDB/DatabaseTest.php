@@ -61,10 +61,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function testCreateWithID() {
         $create = '{"ok":true,"id":"abcde12345","rev":"1-928ec193918889e122e7ad45cfd88e47"}';
         $create_response = new Response(201, [], $create);
-        $fetch = '{"_id":"abcde12345","_rev":"1-928ec193918889e122e7ad45cfd88e47","noise":"howl"}';
-        $fetch_response = new Response(200, [], $fetch);
 
-		$mock = new MockHandler([ $this->use_response, $create_response, $fetch_response ]);
+		$mock = new MockHandler([ $this->use_response, $create_response ]);
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
 
@@ -81,10 +79,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function testCreateWithoutID() {
         $create = '{"ok":true,"id":"95613816b3a7490727388ebb47002c0f","rev":"1-928ec193918889e122e7ad45cfd88e47"}';
         $create_response = new Response(201, [], $create);
-        $fetch = '{"_id":"95613816b3a7490727388ebb47002c0f","_rev":"1-928ec193918889e122e7ad45cfd88e47","noise":"howl"}';
-        $fetch_response = new Response(200, [], $fetch);
 
-		$mock = new MockHandler([ $this->use_response, $create_response, $fetch_response ]);
+		$mock = new MockHandler([ $this->use_response, $create_response ]);
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
 

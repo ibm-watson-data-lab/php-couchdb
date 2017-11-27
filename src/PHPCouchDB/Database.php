@@ -118,10 +118,10 @@ class Database
         try {
             $response = $this->client->request($verb, $endpoint, ['json' => $doc]);
             if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true)) {
-                $id = $response_data['id'];
-                // all good.  Let's fetch the doc and return it
-                $fetched_data = json_decode($this->client->get('/' . $this->db_name . '/' . $id)->getBody(), true);
-                return new Document($this, $fetched_data);
+                $newdoc = new Document($this, $doc);
+                $newdoc->id = $response_data['id'];
+                $newdoc->rev = $response_data['rev'];
+                return $newdoc;
             }
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
             throw new Exception\ServerException(

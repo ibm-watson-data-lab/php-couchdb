@@ -79,9 +79,12 @@ class Document
 
         try {
             $response = $this->client->request('PUT', $endpoint, ["json" => $doc]);
-            // get a brand new version and return it as a brand new object
-            $newrev = $this->database->getDocById($this->id);
-            return $newrev;
+            if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true)) {
+                $newdoc = new Document($this->database, $doc);
+                $newdoc->id = $response_data['id'];
+                $newdoc->rev = $response_data['rev'];
+                return $newdoc;
+            }
         } catch (\GuzzleHTTP\Exception\ClientException $e) {
             // is it a conflict?  Or something else?
             if ($e->getResponse()->getStatusCode() == 409) {
