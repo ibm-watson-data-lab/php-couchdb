@@ -12,11 +12,6 @@ use GuzzleHttp\Exception\RequestException;
 class DatabaseTest extends \PHPUnit\Framework\TestCase 
 {
     public function setUp() {
-        // create the first request to check we can connect, can be added to
-        // the mocks for any test that wants it
-        $couchdb1 = '{"couchdb":"Welcome","version":"2.0.0","vendor":{"name":"The Apache Software Foundation"}}';
-		$this->db_response = new Response(200, [], $couchdb1);
-
         // offer a use_response for when selecting this database
         $egdb1 = '{"db_name":"egdb","update_seq":"0-g1AAAABXeJzLYWBgYMpgTmEQTM4vTc5ISXLIyU9OzMnILy7JAUklMiTV____PyuRAY-iPBYgydAApP5D1GYBAJmvHGw","sizes":{"file":8488,"external":0,"active":0},"purge_seq":0,"other":{"data_size":0},"doc_del_count":0,"doc_count":0,"disk_size":8488,"disk_format_version":6,"data_size":0,"compact_running":false,"instance_start_time":"0"}';
         $this->use_response = new Response(200, [], $egdb1);
@@ -29,7 +24,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 ]}';
         $docs_response = new Response(200, [], $docs);
 
-		$mock = new MockHandler([ $this->db_response, $this->use_response, $docs_response ]);
+		$mock = new MockHandler([ $this->use_response, $docs_response ]);
 
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
@@ -49,7 +44,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 ]}';
         $docs_response = new Response(200, [], $docs);
 
-		$mock = new MockHandler([ $this->db_response, $this->use_response, $docs_response ]);
+		$mock = new MockHandler([ $this->use_response, $docs_response ]);
 
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
@@ -69,7 +64,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $fetch = '{"_id":"abcde12345","_rev":"1-928ec193918889e122e7ad45cfd88e47","noise":"howl"}';
         $fetch_response = new Response(200, [], $fetch);
 
-		$mock = new MockHandler([ $this->db_response, $this->use_response, $create_response, $fetch_response ]);
+		$mock = new MockHandler([ $this->use_response, $create_response, $fetch_response ]);
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
 
@@ -89,7 +84,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $fetch = '{"_id":"95613816b3a7490727388ebb47002c0f","_rev":"1-928ec193918889e122e7ad45cfd88e47","noise":"howl"}';
         $fetch_response = new Response(200, [], $fetch);
 
-		$mock = new MockHandler([ $this->db_response, $this->use_response, $create_response, $fetch_response ]);
+		$mock = new MockHandler([ $this->use_response, $create_response, $fetch_response ]);
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
 
@@ -109,7 +104,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $fetch = '{"_id":"95613816b3a7490727388ebb47002c0f","_rev":"1-928ec193918889e122e7ad45cfd88e47","noise":"howl"}';
         $fetch_response = new Response(200, [], $fetch);
 
-		$mock = new MockHandler([ $this->db_response, $this->use_response, $create_response, $fetch_response, $fetch_response ]);
+		$mock = new MockHandler([ $this->use_response, $create_response, $fetch_response, $fetch_response ]);
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
 
@@ -125,7 +120,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     }
 
     public function testGetName() {
-		$mock = new MockHandler([ $this->db_response, $this->use_response ]);
+		$mock = new MockHandler([ $this->use_response ]);
 
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);
@@ -138,7 +133,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
     }
 
     public function testGetClient() {
-		$mock = new MockHandler([ $this->db_response, $this->use_response ]);
+		$mock = new MockHandler([ $this->use_response ]);
 
 		$handler = HandlerStack::create($mock);
 		$client = new Client(['handler' => $handler]);

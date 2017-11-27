@@ -45,39 +45,38 @@ class Server
             );
         }
 
-        // try to connect as well
-        try {
-            $client->get('/');
-            $this->client = $client;
-        } catch (\GuzzleHttp\Exception\ConnectException $e) {
-            throw new Exception\ServerException(
-                "Could not connect to database.  Error: " . $e->getMessage(),
-                0,
-                $e
-            );
-        }
+        $this->client = $client;
     }
 
     /**
      * Ask the CouchDB server what version it is running
      *
      * @return string Version, e.g. "2.0.1"
-     * @throws \PHPCouchDB\Exception\ServerException if there's a problem with parsing arguments or creating the client
+     * @throws \PHPCouchDB\Exception\ServerException if there's a problem with
+     * connecting to the server or parsing arguments
      */
     public function getVersion() : string
     {
-        $response = $this->client->request("GET", "/");
-        if ($response->getStatusCode() == 200) {
-            // try to decode JSON
-            if ($json_data = json_decode($response->getBody(), true)) {
-                if ($json_data['version']) {
-                    return $json_data['version'];
+        try {
+            $response = $this->client->request("GET", "/");
+            if ($response->getStatusCode() == 200) {
+                // try to decode JSON
+                if ($json_data = json_decode($response->getBody(), true)) {
+                    if ($json_data['version']) {
+                        return $json_data['version'];
+                    } else {
+                        return "unknown";
+                    }
                 } else {
-                    return "unknown";
+                    throw new Exception\ServerException('JSON response not received or not understood');
                 }
-            } else {
-                throw new Exception\ServerException('JSON response not received or not understood');
             }
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+            throw new Exception\ServerException(
+                "Could not connect to database.  Error: " . $e->getMessage(),
+                0,
+                $e
+            );
         }
     }
 
