@@ -65,22 +65,48 @@ class Database
      *
      * @param array $options  Any modifiers needed for the query  These include:
      *      - include_docs   Defaults to true
-     * @return array The array contains `PHPCouchDB\Document` objects
+     * @return array The array contains `PHPCouchDB\Document` objects if the
+     *      include_docs parameter was set; otherwise an array of arrays with
+     *      "id" and "rev" keys
      */
     public function getAllDocs($options = []) : array
     {
         $endpoint = "/" . $this->db_name . "/_all_docs";
-        $query = ["include_docs" => "true"];
+
+        // grab extra params
+        $query = $options;
+
+        // set some defaults
+        if (isset($query['include_docs']) && $query['include_docs'] == false) {
+            // needs to be a string
+            $query['include_docs'] = "false";
+        } else {
+            // needs to be a string and this is our chosen default value
+            $query['include_docs'] = "true";
+        }
+
         $response = $this->client->request("GET", $endpoint, ["query" => $query]);
         if ($response->getStatusCode() == 200) {
             // try to decode JSON
             if ($json_data = json_decode($response->getBody(), true)) {
-                // we have some data - extract the docs to return
-                $docs = [];
-                foreach ($json_data["rows"] as $document) {
-                    $docs[] = new Document($this, $document["doc"]);
+                if (isset($json_data['rows'][0]['doc'])) {
+                    // we have some data - extract the docs to return
+                    $docs = [];
+                    foreach ($json_data["rows"] as $document) {
+                        $docs[] = new Document($this, $document["doc"]);
+                    }
+                    return $docs;
+                } else {
+                    // no docs, just return some basic info
+                    $results = [];
+                    foreach ($json_data['rows'] as $document) {
+                        $row = [];
+                        $row['id'] = $document['id'];
+                        $row['rev'] = $document['value']['rev'];
+                        $results[] = $row;
+                    }
+                    return $results;
                 }
-                return $docs;
             } else {
                 throw new Exception\ServerException('JSON response not received or not understood');
             }
