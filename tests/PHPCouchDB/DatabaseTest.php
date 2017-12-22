@@ -140,4 +140,27 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 
         $this->assertInstanceOf('\GuzzleHttp\ClientInterface', $database->getClient());
     }
+
+    public function testAllDocsWithoutIncludeDocs() {
+        $docs = '{"total_rows":88378,"offset":0,"rows":[
+{"id":"27881d866ac53784daebdd4fd3036986","key":"27881d866ac53784daebdd4fd3036986","value":{"rev":"1-d3d95288556bb4875daa17ab81b21813"}},
+{"id":"27881d866ac53784daebdd4fd3037731","key":"27881d866ac53784daebdd4fd3037731","value":{"rev":"1-4ccc2e75f0328ac53b852684f303906f"}}
+]}';
+        $docs_response = new Response(200, [], $docs);
+
+		$mock = new MockHandler([ $this->use_response, $docs_response ]);
+
+		$handler = HandlerStack::create($mock);
+		$client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
+        $database = $server->useDB(["name" => "egdb"]);
+        $docs = $database->getAllDocs(["include_docs" => false]);
+
+        $this->assertInternalType('array', $docs);
+        $this->assertInternalType('array', $docs[0]);
+        $this->assertArrayHasKey('id', $docs[0]);
+        $this->assertArrayHasKey('rev', $docs[0]);
+    }
 }
