@@ -168,25 +168,25 @@ class Database
     public function getView($options = []) : array
     {
         // check we have ddoc and view name
-        if(!isset($options['ddoc'])) {
+        if (!isset($options['ddoc'])) {
             throw new Exception\ServerException(
                 'ddoc is a required parameter for getView'
             );
         }
-        if(!isset($options['view'])) {
+        if (!isset($options['view'])) {
             throw new Exception\ServerException(
                 'view is a required parameter for getView'
             );
         }
 
-        $endpoint = "/" . $this->db_name . "/_design/" . $options['ddoc'] 
+        $endpoint = "/" . $this->db_name . "/_design/" . $options['ddoc']
             . "/_view/" . $options['view'];
 
         // grab extra params
         $query = [];
-        foreach($options as $key => $value) {
+        foreach ($options as $key => $value) {
             // skip the values we need for the URL, pass the rest through
-            if(!in_array($key, ["ddoc", "view"])) {
+            if (!in_array($key, ["ddoc", "view"])) {
                 $query[$key] = $value;
             }
         }
@@ -205,7 +205,8 @@ class Database
         return $data;
     }
 
-    protected function handleServerResponse($response) : array {
+    protected function handleServerResponse($response) : arrayxi
+    {
         if ($response->getStatusCode() == 200) {
             // try to decode JSON
             if ($json_data = json_decode($response->getBody(), true)) {
@@ -225,5 +226,4 @@ class Database
             }
         }
     }
-
 }
