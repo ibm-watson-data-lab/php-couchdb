@@ -213,8 +213,18 @@ class Database
                 if (isset($json_data['rows'][0]['doc'])) {
                     // we have some data - extract the docs to return
                     $docs = [];
-                    foreach ($json_data["rows"] as $document) {
+                    foreach ($json_data['rows'] as $document) {
                         $docs[] = new Document($this, $document["doc"]);
+                    }
+                    return $docs;
+                } elseif (isset($json_data['rows'][0]['value']['rev'])) {
+                    // assume these are doc signposts
+                    $docs = [];
+                    foreach ($json_data['rows'] as $item) {
+                        $doc = [];
+                        $doc['id'] = $item['id'];
+                        $doc['rev'] = $item['value']['rev'];
+                        $docs[] = $doc;
                     }
                     return $docs;
                 } else {
