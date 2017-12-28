@@ -205,7 +205,7 @@ class Database
         return $data;
     }
 
-    protected function handleServerResponse($response) : arrayxi
+    protected function handleServerResponse($response) : array
     {
         if ($response->getStatusCode() == 200) {
             // try to decode JSON
