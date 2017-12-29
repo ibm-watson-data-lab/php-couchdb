@@ -76,10 +76,9 @@ class Database
         // grab extra params
         $query = $options;
 
-        // set some defaults
-        if (isset($query['include_docs']) && $query['include_docs'] == false) {
-            // needs to be a string
-            $query['include_docs'] = "false";
+        // convert data and set some defaults
+        if (isset($query['include_docs'])) {
+            $query['include_docs'] = $this->boolToString($query['include_docs']);
         } else {
             // needs to be a string and this is our chosen default value
             $query['include_docs'] = "true";
@@ -191,13 +190,19 @@ class Database
             }
         }
 
-        // set some defaults
-        if (isset($query['include_docs']) && $query['include_docs'] == true) {
-            // needs to be a string
-            $query['include_docs'] = "true";
+        // convert data and set some defaults
+        if (isset($query['include_docs'])) {
+            $query['include_docs'] = $this->boolToString($query['include_docs']);
         } else {
             // needs to be a string and this is our chosen default value
             $query['include_docs'] = "false";
+        }
+
+        if (isset($query['reduce'])) {
+            $query['reduce'] = $this->boolToString($query['reduce']);
+        } else {
+            // needs to be a string and this is our chosen default value
+            $query['reduce'] = "true";
         }
 
         $response = $this->client->request("GET", $endpoint, ["query" => $query]);
@@ -234,6 +239,21 @@ class Database
             } else {
                 throw new Exception\ServerException('JSON response not received or not understood');
             }
+        }
+    }
+
+    /**
+     * Convert truthy things to "true" and the rest to "false" because
+     * Guzzle doesn't send booleans as words
+     *
+     * @param mixed $value The value to use
+     * @return A string either "true" or "false"
+     */
+    protected function boolToString($value) {
+        if($value) {
+            return "true";
+        } else {
+            return "false";
         }
     }
 }
