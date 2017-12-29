@@ -249,8 +249,9 @@ class Database
      * @param mixed $value The value to use
      * @return A string either "true" or "false"
      */
-    protected function boolToString($value) {
-        if($value) {
+    protected function boolToString($value)
+    {
+        if ($value) {
             return "true";
         } else {
             return "false";
