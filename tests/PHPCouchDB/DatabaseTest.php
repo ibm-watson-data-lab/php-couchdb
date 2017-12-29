@@ -163,4 +163,51 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayHasKey('id', $docs[0]);
         $this->assertArrayHasKey('rev', $docs[0]);
     }
+
+    public function testView() {
+        $view = '{"rows":[
+{"key":"2012","value":34028},
+{"key":"2013","value":33023},
+{"key":"2014","value":21324}
+]}';
+        $view_response = new Response(200, [], $view);
+
+        $mock = new MockHandler([ $this->use_response, $view_response ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
+        $database = $server->useDB(["name" => "egdb"]);
+        $docs = $database->getView(["ddoc" => "myview", "view" => "year", "group" => true]);
+
+        $this->assertInternalType('array', $docs);
+        $this->assertEquals(3, count($docs));
+        $this->assertInternalType('array', $docs[0]);
+    }
+
+    public function testViewWithIncludeDocs() {
+        $view = '{"total_rows":88375,"offset":0,"rows":[
+{"id":"27881d866ac53784daebdd4fd3036986","key":"2012","value":1,"doc":{"_id":"27881d866ac53784daebdd4fd3036986","_rev":"1-d3d95288556bb4875daa17ab81b21813","Retailer country":"Italy","Order method type":"Sales visit","Retailer type":"Warehouse Store","Product line":"Camping Equipment","Product type":"Lanterns","Product":"EverGlow Single","Year":"2012","Quarter":"Q1 2012","Revenue":"15130.95","Quantity":"447","Gross margin":"0.46706056"}},
+{"id":"27881d866ac53784daebdd4fd3037731","key":"2012","value":1,"doc":{"_id":"27881d866ac53784daebdd4fd3037731","_rev":"1-4ccc2e75f0328ac53b852684f303906f","Retailer country":"Italy","Order method type":"Sales visit","Retailer type":"Warehouse Store","Product line":"Personal Accessories","Product type":"Knives","Product":"Single Edge","Year":"2012","Quarter":"Q1 2012","Revenue":"37411.15","Quantity":"3115","Gross margin":"0.28726062"}},
+{"id":"27881d866ac53784daebdd4fd30378ed","key":"2012","value":1,"doc":{"_id":"27881d866ac53784daebdd4fd30378ed","_rev":"1-d10f91c4f214cc96bd7bf5d38943693f","Retailer country":"Italy","Order method type":"Sales visit","Retailer type":"Warehouse Store","Product line":"Personal Accessories","Product type":"Knives","Product":"Double Edge","Year":"2012","Quarter":"Q1 2012","Revenue":"9151.38","Quantity":"567","Gross margin":"0.29182156"}}
+]}';
+        $view_response = new Response(200, [], $view);
+
+        $mock = new MockHandler([ $this->use_response, $view_response ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["client" => $client]);
+        $database = $server->useDB(["name" => "egdb"]);
+        $docs = $database->getView(["ddoc" => "myview", "view" => "year", "reduce" => false, "limit" => 3, "include_docs" => true]);
+
+        $this->assertInternalType('array', $docs);
+        $this->assertEquals(3, count($docs));
+        $this->assertInstanceOf('PHPCouchDB\Document', $docs[0]);
+        $this->assertObjectHasAttribute('Product type', $docs[0]);
+    }
 }

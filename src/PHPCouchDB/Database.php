@@ -76,41 +76,17 @@ class Database
         // grab extra params
         $query = $options;
 
-        // set some defaults
-        if (isset($query['include_docs']) && $query['include_docs'] == false) {
-            // needs to be a string
-            $query['include_docs'] = "false";
+        // convert data and set some defaults
+        if (isset($query['include_docs'])) {
+            $query['include_docs'] = $this->boolToString($query['include_docs']);
         } else {
             // needs to be a string and this is our chosen default value
             $query['include_docs'] = "true";
         }
 
         $response = $this->client->request("GET", $endpoint, ["query" => $query]);
-        if ($response->getStatusCode() == 200) {
-            // try to decode JSON
-            if ($json_data = json_decode($response->getBody(), true)) {
-                if (isset($json_data['rows'][0]['doc'])) {
-                    // we have some data - extract the docs to return
-                    $docs = [];
-                    foreach ($json_data["rows"] as $document) {
-                        $docs[] = new Document($this, $document["doc"]);
-                    }
-                    return $docs;
-                } else {
-                    // no docs, just return some basic info
-                    $results = [];
-                    foreach ($json_data['rows'] as $document) {
-                        $row = [];
-                        $row['id'] = $document['id'];
-                        $row['rev'] = $document['value']['rev'];
-                        $results[] = $row;
-                    }
-                    return $results;
-                }
-            } else {
-                throw new Exception\ServerException('JSON response not received or not understood');
-            }
-        }
+        $data = $this->handleServerResponse($response);
+        return $data;
     }
 
     /**
@@ -185,6 +161,99 @@ class Database
             } else {
                 throw new Exception\DatabaseException('The document could not be retrieved', 0, $e);
             }
+        }
+    }
+
+    public function getView($options = []) : array
+    {
+        // check we have ddoc and view name
+        if (!isset($options['ddoc'])) {
+            throw new Exception\ServerException(
+                'ddoc is a required parameter for getView'
+            );
+        }
+        if (!isset($options['view'])) {
+            throw new Exception\ServerException(
+                'view is a required parameter for getView'
+            );
+        }
+
+        $endpoint = "/" . $this->db_name . "/_design/" . $options['ddoc']
+            . "/_view/" . $options['view'];
+
+        // grab extra params
+        $query = [];
+        foreach ($options as $key => $value) {
+            // skip the values we need for the URL, pass the rest through
+            if (!in_array($key, ["ddoc", "view"])) {
+                $query[$key] = $value;
+            }
+        }
+
+        // convert data and set some defaults
+        if (isset($query['include_docs'])) {
+            $query['include_docs'] = $this->boolToString($query['include_docs']);
+        } else {
+            // needs to be a string and this is our chosen default value
+            $query['include_docs'] = "false";
+        }
+
+        if (isset($query['reduce'])) {
+            $query['reduce'] = $this->boolToString($query['reduce']);
+        } else {
+            // needs to be a string and this is our chosen default value
+            $query['reduce'] = "true";
+        }
+
+        $response = $this->client->request("GET", $endpoint, ["query" => $query]);
+        $data = $this->handleServerResponse($response);
+        return $data;
+    }
+
+    protected function handleServerResponse($response) : array
+    {
+        if ($response->getStatusCode() == 200) {
+            // try to decode JSON
+            if ($json_data = json_decode($response->getBody(), true)) {
+                if (isset($json_data['rows'][0]['doc'])) {
+                    // we have some data - extract the docs to return
+                    $docs = [];
+                    foreach ($json_data['rows'] as $document) {
+                        $docs[] = new Document($this, $document["doc"]);
+                    }
+                    return $docs;
+                } elseif (isset($json_data['rows'][0]['value']['rev'])) {
+                    // assume these are doc signposts
+                    $docs = [];
+                    foreach ($json_data['rows'] as $item) {
+                        $doc = [];
+                        $doc['id'] = $item['id'];
+                        $doc['rev'] = $item['value']['rev'];
+                        $docs[] = $doc;
+                    }
+                    return $docs;
+                } else {
+                    // no docs, just return some basic info
+                    return $json_data["rows"];
+                }
+            } else {
+                throw new Exception\ServerException('JSON response not received or not understood');
+            }
+        }
+    }
+
+    /**
+     * Convert truthy things to "true" and the rest to "false" because
+     * Guzzle doesn't send booleans as words
+     *
+     * @param mixed $value The value to use
+     * @return A string either "true" or "false"
+     */
+    protected function boolToString($value) {
+        if($value) {
+            return "true";
+        } else {
+            return "false";
         }
     }
 }
