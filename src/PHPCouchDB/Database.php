@@ -164,6 +164,14 @@ class Database
         }
     }
 
+    /**
+     * Get data from a view, either docs or grouped data
+     *
+     * @param array $options Must include `ddoc` and `view`, also suppoerts any
+     *   other query parameters that should be passed to the view (e.g. limit)
+     * @return array If there are documents, an array of \PHPCouchDB\Document
+     *   objects, otherwise an array as appropriate
+     */
     public function getView($options = []) : array
     {
         // check we have ddoc and view name
@@ -210,6 +218,18 @@ class Database
         return $data;
     }
 
+    /**
+     * Take a result set, work out if it contains docs, doc tombstones, or
+     * data that we shouldn't mess with, and return \Document objects or arrays
+     * as appropriate
+     *
+     * @param \GuzzleHttp\Message\ResponseInterface $response What we got back
+     *  from making a Guzzle request to the CouchDB server
+     * @return array An array whose contents depends on the response content:
+     *  - an array of full CouchDB docs: returns array of \PHPCouchDB\Document
+     *  - an array of id/rev pairs from docs: returns an array of arrays containing id/rev
+     *  - an array of anything else: returns it just as an array
+     */
     protected function handleServerResponse($response) : array
     {
         if ($response->getStatusCode() == 200) {
@@ -247,9 +267,9 @@ class Database
      * Guzzle doesn't send booleans as words
      *
      * @param mixed $value The value to use
-     * @return A string either "true" or "false"
+     * @return string A string either "true" or "false"
      */
-    protected function boolToString($value)
+    protected function boolToString($value) : string
     {
         if ($value) {
             return "true";
