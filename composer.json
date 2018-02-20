@@ -3,6 +3,7 @@
     "description": "Library for easily talking to CouchDB from PHP",
     "type": "library",
     "license": "Apache-2.0",
+    "version": "0.1.1",
     "authors": [
         {
             "name": "Lorna Jane Mitchell",
