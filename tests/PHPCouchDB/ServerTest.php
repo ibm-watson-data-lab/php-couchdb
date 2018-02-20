@@ -31,6 +31,22 @@ class ServerTest extends \PHPUnit\Framework\TestCase
         $this->assertAttributeInstanceOf('\GuzzleHttp\ClientInterface', 'client', $server);
     }
 
+    public function testCreateWithUrl() {
+		$mock = new MockHandler([ ]);
+
+		$handler = HandlerStack::create($mock);
+
+		// userland code starts
+		$server = new \PHPCouchDB\Server(["url" => "http://localhost:5984"]);
+
+        $this->assertObjectHasAttribute('client', $server);
+        $this->assertAttributeInstanceOf('\GuzzleHttp\ClientInterface', 'client', $server);
+
+        $config = $server->getClient()->getConfig();
+        $this->assertArrayHasKey('User-Agent', $config['headers']);
+        $this->assertStringStartsWith('PHPCouchDB', $config['headers']['User-Agent']);
+    }
+
     public function testGetVersion() {
 		$mock = new MockHandler([ $this->db_response ]);
 
