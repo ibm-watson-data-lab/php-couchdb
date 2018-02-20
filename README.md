@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ibm-watson-data-lab/php-couchdb.svg?branch=master)](https://travis-ci.org/ibm-watson-data-lab/php-couchdb)
+
 # PHP CouchDB
 
 :warning: This project is under early and active development.  Comments, experimentation and feedback all gratefully received.
