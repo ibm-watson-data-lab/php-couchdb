@@ -6,6 +6,8 @@
 
 namespace PHPCouchDB;
 
+const VERSION = "0.1.0";
+
 /**
  * Server class deals with operations on the server level, rather than specific
  * to a particular database
@@ -38,7 +40,10 @@ class Server
         if (isset($options['client']) && $options['client'] instanceof \GuzzleHttp\ClientInterface) {
             $client = $options['client'];
         } elseif (isset($options['url'])) {
-            $client = new \GuzzleHttp\Client(["base_uri" => $options['url']]);
+            // set a descriptive user agent
+            $user_agent = \GuzzleHttp\default_user_agent();
+            $client = new \GuzzleHttp\Client(["base_uri" => $options['url'],
+            "headers" => ["User-Agent" => "PHPCouchDB/" . VERSION . " " . $user_agent]]);
         } else {
             throw new Exception\ServerException(
                 'Failed to parse $options, array should contain either a url or a client'
