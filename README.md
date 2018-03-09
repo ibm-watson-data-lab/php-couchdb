@@ -24,13 +24,13 @@ Here's the tl;dr of how to begin.  For more detailed examples, see the [wiki](ht
 require "vendor/autoload.php";
 
 // connect to CouchDB (does make a call to check we can connect)
-$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_URL => "http://localhost:5984"]);
+$server = new \PHPCouchDB\Server(["url" => "http://localhost:5984"]);
 
 // get a list of databases; each one is a \PHPCouchDB\Database object
 $databases = $server->getAllDbs();
 
 // work with the "test" database (also a \PHPCouchDB\Database object)
-$test_db = $server->useDb([\PHPCouchDB\Server::OPTION_NAME => "test", \PHPCouchDB\Server::OPTION_CREATE_IF_NOT_EXISTS => true]);
+$test_db = $server->useDb(["name" => "test", "create_if_not_exists" => true]);
 
 // add a document - you may specify the "id" here if you like
 $doc = $test_db->create(["name" => "Alice", "interests" => ["eating", "wondering"]]);
