@@ -19,6 +19,8 @@ class Database
 
     const OPTION_INCLUDE_DOCS = 'include_docs';
     const OPTION_REDUCE = 'reduce';
+    const OPTION_DDOC = 'ddoc';
+    const OPTION_VIEW = 'view';
 
     /**
      * Constructor for the Database object - this is usually called by
@@ -179,25 +181,25 @@ class Database
     public function getView($options = []) : array
     {
         // check we have ddoc and view name
-        if (!isset($options['ddoc'])) {
+        if (!isset($options[self::OPTION_DDOC])) {
             throw new Exception\ServerException(
                 'ddoc is a required parameter for getView'
             );
         }
-        if (!isset($options['view'])) {
+        if (!isset($options[self::OPTION_VIEW])) {
             throw new Exception\ServerException(
                 'view is a required parameter for getView'
             );
         }
 
-        $endpoint = "/" . $this->db_name . "/_design/" . $options['ddoc']
-            . "/_view/" . $options['view'];
+        $endpoint = "/" . $this->db_name . "/_design/" . $options[self::OPTION_DDOC]
+            . "/_view/" . $options[self::OPTION_VIEW];
 
         // grab extra params
         $query = [];
         foreach ($options as $key => $value) {
             // skip the values we need for the URL, pass the rest through
-            if (!in_array($key, ["ddoc", "view"])) {
+            if (!in_array($key, [self::OPTION_DDOC, self::OPTION_VIEW])) {
                 $query[$key] = $value;
             }
         }

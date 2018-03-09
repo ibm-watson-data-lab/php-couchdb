@@ -180,7 +180,11 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		// userland code starts
         $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
         $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
-        $docs = $database->getView(["ddoc" => "myview", "view" => "year", "group" => true]);
+        $docs = $database->getView([
+            \PHPCouchDB\Database::OPTION_DDOC => "myview",
+            \PHPCouchDB\Database::OPTION_VIEW => "year",
+            "group" => true
+        ]);
 
         $this->assertInternalType('array', $docs);
         $this->assertEquals(3, count($docs));
@@ -203,7 +207,13 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		// userland code starts
         $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
         $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
-        $docs = $database->getView(["ddoc" => "myview", "view" => "year", "reduce" => false, "limit" => 3, "include_docs" => true]);
+        $docs = $database->getView([
+            \PHPCouchDB\Database::OPTION_DDOC => "myview",
+            \PHPCouchDB\Database::OPTION_VIEW => "year",
+            "reduce" => false,
+            "limit" => 3,
+            \PHPCouchDB\Database::OPTION_INCLUDE_DOCS => true
+        ]);
 
         $this->assertInternalType('array', $docs);
         $this->assertEquals(3, count($docs));
