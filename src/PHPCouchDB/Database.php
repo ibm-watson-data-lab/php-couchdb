@@ -17,6 +17,10 @@ class Database
     protected $client;
     protected $db_name;
 
+    const OPTION_INCLUDE_DOCS = 'include_docs';
+    const OPTION_REDUCE = 'reduce';
+    const OPTION_DDOC = 'ddoc';
+    const OPTION_VIEW = 'view';
 
     /**
      * Constructor for the Database object - this is usually called by
@@ -77,11 +81,13 @@ class Database
         $query = $options;
 
         // convert data and set some defaults
-        if (isset($query['include_docs'])) {
-            $query['include_docs'] = $this->boolToString($query['include_docs']);
+        if (isset($query[self::OPTION_INCLUDE_DOCS])) {
+            $query[self::OPTION_INCLUDE_DOCS] = $this->boolToString(
+                $query[self::OPTION_INCLUDE_DOCS]
+            );
         } else {
             // needs to be a string and this is our chosen default value
-            $query['include_docs'] = "true";
+            $query[self::OPTION_INCLUDE_DOCS] = "true";
         }
 
         $response = $this->client->request("GET", $endpoint, ["query" => $query]);
@@ -167,7 +173,7 @@ class Database
     /**
      * Get data from a view, either docs or grouped data
      *
-     * @param array $options Must include `ddoc` and `view`, also suppoerts any
+     * @param array $options Must include `ddoc` and `view`, also supports any
      *   other query parameters that should be passed to the view (e.g. limit)
      * @return array If there are documents, an array of \PHPCouchDB\Document
      *   objects, otherwise an array as appropriate
@@ -175,42 +181,46 @@ class Database
     public function getView($options = []) : array
     {
         // check we have ddoc and view name
-        if (!isset($options['ddoc'])) {
+        if (!isset($options[self::OPTION_DDOC])) {
             throw new Exception\ServerException(
                 'ddoc is a required parameter for getView'
             );
         }
-        if (!isset($options['view'])) {
+        if (!isset($options[self::OPTION_VIEW])) {
             throw new Exception\ServerException(
                 'view is a required parameter for getView'
             );
         }
 
-        $endpoint = "/" . $this->db_name . "/_design/" . $options['ddoc']
-            . "/_view/" . $options['view'];
+        $endpoint = "/" . $this->db_name . "/_design/" . $options[self::OPTION_DDOC]
+            . "/_view/" . $options[self::OPTION_VIEW];
 
         // grab extra params
         $query = [];
         foreach ($options as $key => $value) {
             // skip the values we need for the URL, pass the rest through
-            if (!in_array($key, ["ddoc", "view"])) {
+            if (!in_array($key, [self::OPTION_DDOC, self::OPTION_VIEW])) {
                 $query[$key] = $value;
             }
         }
 
         // convert data and set some defaults
-        if (isset($query['include_docs'])) {
-            $query['include_docs'] = $this->boolToString($query['include_docs']);
+        if (isset($query[self::OPTION_INCLUDE_DOCS])) {
+            $query[self::OPTION_INCLUDE_DOCS] = $this->boolToString(
+                $query[self::OPTION_INCLUDE_DOCS]
+            );
         } else {
             // needs to be a string and this is our chosen default value
-            $query['include_docs'] = "false";
+            $query[self::OPTION_INCLUDE_DOCS] = "true";
         }
 
-        if (isset($query['reduce'])) {
-            $query['reduce'] = $this->boolToString($query['reduce']);
+        if (isset($query[self::OPTION_REDUCE])) {
+            $query[self::OPTION_REDUCE] = $this->boolToString(
+                $query[self::OPTION_REDUCE]
+            );
         } else {
             // needs to be a string and this is our chosen default value
-            $query['reduce'] = "true";
+            $query[self::OPTION_REDUCE] = "true";
         }
 
         $response = $this->client->request("GET", $endpoint, ["query" => $query]);

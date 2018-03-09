@@ -25,10 +25,10 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
+		$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
 
-        $this->assertObjectHasAttribute('client', $server);
-        $this->assertAttributeInstanceOf('\GuzzleHttp\ClientInterface', 'client', $server);
+        $this->assertObjectHasAttribute(\PHPCouchDB\Server::OPTION_CLIENT, $server);
+        $this->assertAttributeInstanceOf('\GuzzleHttp\ClientInterface', \PHPCouchDB\Server::OPTION_CLIENT, $server);
     }
 
     public function testCreateWithUrl() {
@@ -37,10 +37,10 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$handler = HandlerStack::create($mock);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["url" => "http://localhost:5984"]);
+		$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_URL => "http://localhost:5984"]);
 
-        $this->assertObjectHasAttribute('client', $server);
-        $this->assertAttributeInstanceOf('\GuzzleHttp\ClientInterface', 'client', $server);
+        $this->assertObjectHasAttribute(\PHPCouchDB\Server::OPTION_CLIENT, $server);
+        $this->assertAttributeInstanceOf('\GuzzleHttp\ClientInterface', \PHPCouchDB\Server::OPTION_CLIENT, $server);
 
         $config = $server->getClient()->getConfig();
         $this->assertArrayHasKey('User-Agent', $config['headers']);
@@ -54,7 +54,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
+		$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
 		$this->assertEquals("2.0.0", $server->getVersion());
 
     }
@@ -68,7 +68,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
+		$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
 		$this->assertEquals($dbs, $server->getAllDbs());
     }
 
@@ -81,8 +81,8 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-		$this->assertInstanceOf("\PHPCouchDB\Database", $server->useDb(["name" => "egdb"]));
+		$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+		$this->assertInstanceOf("\PHPCouchDB\Database", $server->useDb([\PHPCouchDB\Server::OPTION_NAME => "egdb"]));
     }
 
     public function testUseADbWithCreateThatDoesExist() {
@@ -94,8 +94,10 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-		$this->assertInstanceOf("\PHPCouchDB\Database", $server->useDb(["name" => "egdb", "create_if_not_exists" => false]));
+		$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+		$this->assertInstanceOf("\PHPCouchDB\Database", $server->useDb(
+		    [\PHPCouchDB\Server::OPTION_NAME => "egdb", \PHPCouchDB\Server::OPTION_CREATE_IF_NOT_EXISTS => false]
+        ));
     }
 
     /**
@@ -110,8 +112,8 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-		$server->useDb(["name" => "egdb"]);
+		$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+		$server->useDb([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
     }
 
     public function testUseADbWithCreateThatDoesNotExist() {
@@ -126,8 +128,10 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-		$this->assertInstanceOf("\PHPCouchDB\Database", $server->useDb(["name" => "egdb", "create_if_not_exists" => true]));
+		$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+		$this->assertInstanceOf("\PHPCouchDB\Database", $server->useDb(
+		    [\PHPCouchDB\Server::OPTION_NAME => "egdb", \PHPCouchDB\Server::OPTION_CREATE_IF_NOT_EXISTS => true]
+        ));
     }
 
     public function testGetClient() {
@@ -137,7 +141,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
+		$server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
 		$this->assertInstanceOf("\GuzzleHttp\ClientInterface", $server->getClient());
     }
 }

@@ -18,6 +18,11 @@ class Server
 {
     protected $client;
 
+    const OPTION_CLIENT = 'client';
+    const OPTION_URL = 'url';
+    const OPTION_NAME = 'name';
+    const OPTION_CREATE_IF_NOT_EXISTS = 'create_if_not_exists';
+
     /**
      * Create the object to represent the server
      *
@@ -37,12 +42,13 @@ class Server
             );
         }
 
-        if (isset($options['client']) && $options['client'] instanceof \GuzzleHttp\ClientInterface) {
-            $client = $options['client'];
-        } elseif (isset($options['url'])) {
+        if (isset($options[self::OPTION_CLIENT])
+            && $options[self::OPTION_CLIENT] instanceof \GuzzleHttp\ClientInterface) {
+            $client = $options[self::OPTION_CLIENT];
+        } elseif (isset($options[self::OPTION_URL])) {
             // set a descriptive user agent
             $user_agent = \GuzzleHttp\default_user_agent();
-            $client = new \GuzzleHttp\Client(["base_uri" => $options['url'],
+            $client = new \GuzzleHttp\Client(["base_uri" => $options[self::OPTION_URL],
             "headers" => ["User-Agent" => "PHPCouchDB/" . VERSION . " " . $user_agent]]);
         } else {
             throw new Exception\ServerException(
@@ -117,15 +123,21 @@ class Server
     public function useDb($options) : Database
     {
         // check the $options array is sane
-        if (!isset($options['name'])) {
+        if (!isset($options[self::OPTION_NAME])) {
             throw new Exception\ServerException(
                 '"name" is a required $options parameter'
             );
         } else {
-            $db_name = $options['name'];
+            $db_name = $options[self::OPTION_NAME];
         }
 
-        $create_if_not_exists = isset($options['create_if_not_exists']) ? $options['create_if_not_exists'] : false;
+
+        if (isset($options[self::OPTION_CREATE_IF_NOT_EXISTS])) {
+            $create_if_not_exists = $options[self::OPTION_CREATE_IF_NOT_EXISTS];
+        } else {
+            // default value
+            $create_if_not_exists = false;
+        }
 
         // does this database exist?
         $exists = false;
