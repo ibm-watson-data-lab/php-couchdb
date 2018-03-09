@@ -19,11 +19,8 @@ class Server
     protected $client;
 
     const OPTION_CLIENT = 'client';
-
     const OPTION_URL = 'url';
-
     const OPTION_NAME = 'name';
-
     const OPTION_CREATE_IF_NOT_EXISTS = 'create_if_not_exists';
 
     /**

@@ -17,6 +17,8 @@ class Database
     protected $client;
     protected $db_name;
 
+    const OPTION_INCLUDE_DOCS = 'include_docs';
+    const OPTION_REDUCE = 'reduce';
 
     /**
      * Constructor for the Database object - this is usually called by
@@ -77,11 +79,13 @@ class Database
         $query = $options;
 
         // convert data and set some defaults
-        if (isset($query['include_docs'])) {
-            $query['include_docs'] = $this->boolToString($query['include_docs']);
+        if (isset($query[self::OPTION_INCLUDE_DOCS])) {
+            $query[self::OPTION_INCLUDE_DOCS] = $this->boolToString(
+                $query[self::OPTION_INCLUDE_DOCS]
+            );
         } else {
             // needs to be a string and this is our chosen default value
-            $query['include_docs'] = "true";
+            $query[self::OPTION_INCLUDE_DOCS] = "true";
         }
 
         $response = $this->client->request("GET", $endpoint, ["query" => $query]);
@@ -167,7 +171,7 @@ class Database
     /**
      * Get data from a view, either docs or grouped data
      *
-     * @param array $options Must include `ddoc` and `view`, also suppoerts any
+     * @param array $options Must include `ddoc` and `view`, also supports any
      *   other query parameters that should be passed to the view (e.g. limit)
      * @return array If there are documents, an array of \PHPCouchDB\Document
      *   objects, otherwise an array as appropriate
@@ -199,18 +203,22 @@ class Database
         }
 
         // convert data and set some defaults
-        if (isset($query['include_docs'])) {
-            $query['include_docs'] = $this->boolToString($query['include_docs']);
+        if (isset($query[self::OPTION_INCLUDE_DOCS])) {
+            $query[self::OPTION_INCLUDE_DOCS] = $this->boolToString(
+                $query[self::OPTION_INCLUDE_DOCS]
+            );
         } else {
             // needs to be a string and this is our chosen default value
-            $query['include_docs'] = "false";
+            $query[self::OPTION_INCLUDE_DOCS] = "true";
         }
 
-        if (isset($query['reduce'])) {
-            $query['reduce'] = $this->boolToString($query['reduce']);
+        if (isset($query[self::OPTION_REDUCE])) {
+            $query[self::OPTION_REDUCE] = $this->boolToString(
+                $query[self::OPTION_REDUCE]
+            );
         } else {
             // needs to be a string and this is our chosen default value
-            $query['reduce'] = "true";
+            $query[self::OPTION_REDUCE] = "true";
         }
 
         $response = $this->client->request("GET", $endpoint, ["query" => $query]);
