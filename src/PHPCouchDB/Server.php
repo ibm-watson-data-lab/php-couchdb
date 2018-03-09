@@ -6,7 +6,7 @@
 
 namespace PHPCouchDB;
 
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
 
 /**
  * Server class deals with operations on the server level, rather than specific
