@@ -29,8 +29,8 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $doc = $database->create(["noise" => "howl", "id" => "abcde12345"]);
 
         $doc->noise = "purr";
@@ -54,8 +54,8 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $doc = $database->create(["noise" => "howl", "id" => "abcde12345"]);
 
         $doc->noise = "purr";
@@ -74,8 +74,8 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $doc = $database->create(["noise" => "howl", "id" => "abcde12345"]);
 
         $result = $doc->delete();
@@ -99,8 +99,8 @@ class DocumentTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $doc = $database->create(["noise" => "howl", "id" => "abcde12345"]);
 
         $result = $doc->delete();

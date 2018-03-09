@@ -30,8 +30,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $docs = $database->getAllDocs();
 
         $this->assertInternalType('array', $docs);
@@ -50,8 +50,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $docs = $database->getAllDocs();
 
         $this->assertInternalType('array', $docs);
@@ -67,8 +67,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $doc = $database->create(["noise" => "howl", "id" => "abcde12345"]);
 
         $this->assertInstanceOf('PHPCouchDB\Document', $doc);
@@ -85,8 +85,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $doc = $database->create(["noise" => "howl"]);
 
         $this->assertInstanceOf('PHPCouchDB\Document', $doc);
@@ -105,8 +105,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $doc = $database->create(["noise" => "crackle"]);
 
         $fetched_doc = $database->getDocById($doc->id);
@@ -122,8 +122,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
 
         $this->assertInternalType('string', $database->getName());
     }
@@ -135,8 +135,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
 
         $this->assertInstanceOf('\GuzzleHttp\ClientInterface', $database->getClient());
     }
@@ -154,9 +154,9 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
 		$client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
-        $docs = $database->getAllDocs(["include_docs" => false]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
+        $docs = $database->getAllDocs([\PHPCouchDB\Database::OPTION_INCLUDE_DOCS => false]);
 
         $this->assertInternalType('array', $docs);
         $this->assertInternalType('array', $docs[0]);
@@ -178,8 +178,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $docs = $database->getView(["ddoc" => "myview", "view" => "year", "group" => true]);
 
         $this->assertInternalType('array', $docs);
@@ -201,8 +201,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $client = new Client(['handler' => $handler]);
 
 		// userland code starts
-		$server = new \PHPCouchDB\Server(["client" => $client]);
-        $database = $server->useDB(["name" => "egdb"]);
+        $server = new \PHPCouchDB\Server([\PHPCouchDB\Server::OPTION_CLIENT => $client]);
+        $database = $server->useDB([\PHPCouchDB\Server::OPTION_NAME => "egdb"]);
         $docs = $database->getView(["ddoc" => "myview", "view" => "year", "reduce" => false, "limit" => 3, "include_docs" => true]);
 
         $this->assertInternalType('array', $docs);
