@@ -45,7 +45,8 @@ class Server
             );
         }
 
-        if (isset($options[self::OPTION_CLIENT]) && $options[self::OPTION_CLIENT] instanceof \GuzzleHttp\ClientInterface) {
+        if (isset($options[self::OPTION_CLIENT])
+            && $options[self::OPTION_CLIENT] instanceof \GuzzleHttp\ClientInterface) {
             $client = $options[self::OPTION_CLIENT];
         } elseif (isset($options[self::OPTION_URL])) {
             // set a descriptive user agent
@@ -133,7 +134,13 @@ class Server
             $db_name = $options[self::OPTION_NAME];
         }
 
-        $create_if_not_exists = isset($options[self::OPTION_CREATE_IF_NOT_EXISTS]) ? $options[self::OPTION_CREATE_IF_NOT_EXISTS] : false;
+
+        if (isset($options[self::OPTION_CREATE_IF_NOT_EXISTS])) {
+            $create_if_not_exists = $options[self::OPTION_CREATE_IF_NOT_EXISTS];
+        } else {
+            // default value
+            $create_if_not_exists = false;
+        }
 
         // does this database exist?
         $exists = false;
