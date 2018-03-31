@@ -186,16 +186,21 @@ class Server
             $response = $this->client->request("PUT", "/_users/org.couchdb.user:" . $username, ['json' => $doc]);
             if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
             {
-                return $response_data['rev'];
+                return $response_data['_rev'];
+            }
+            else
+            {
+                throw new Exception\ServerException(
+                    'Problem creating user'
+                );
             }
         } 
-        catch (\GuzzleHttp\Exception\ClientException $e) {
-            return false;
+        catch (\GuzzleHttp\Exception\ClientException $e){
+            throw new Exception\ServerException(
+                'Connection or other Error:' . $e->getMessage()
+            );
         }
-	    throw new Exception\ServerException(
-            'Problem creating user'
-        );
-
+        
     }
 
     /**
@@ -222,7 +227,8 @@ class Server
             try
             {
             	$response = $this->client->request("GET", "/_users/org.couchdb.user:" . $username);
-            	if ($response->getStatusCode() == 200 && $response_data = json_decode($response->getBody(), true))
+                if ($response->getStatusCode() == 200 
+                    && $response_data = json_decode($response->getBody(), true))
            	    {
                     $rev = $response_data['_rev'];
                 }
@@ -230,7 +236,9 @@ class Server
                 {
                     if($response->getStatusCode() == 404)
                     {
-                        throw new Exception\ServerException("Your connection doesn't have privileges to confirm the user, or the user does not exist");
+                        throw new Exception\ServerException(
+                            "Your connection doesn't have privileges to confirm the user, or the user does not exist"
+                        );
                     }
                     throw new Exception\ServerException("Something went wrong: " . $response->getStatusCode());
                 }
@@ -251,7 +259,7 @@ class Server
             ]);
             if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
             {
-            	return $response_data['rev'];
+            	return $response_data['_rev'];
             }
             else
             {
