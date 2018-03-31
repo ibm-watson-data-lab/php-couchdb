@@ -165,6 +165,48 @@ class Server
         );
     }
 
+    public function createUser($username, $password, $roles = [])
+    {
+        $doc = [
+            'name' => $username,
+            'password' => $password,
+            'roles' => $roles,
+            'type' => 'user',
+        ];
+       $response = $this->client->request("PUT", "/_users/org.couchdb.user:" . $username, ['json' => $doc]);
+       if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
+       {
+           return $response_data['rev'];
+       }
+       return false;
+    }
+
+    public function updateUser($username, $password, $rev = false)
+    {
+        $doc = [
+            'password' => $password,
+        ];
+        if(!$rev)
+        {
+            $response = $this->client->request("GET", "/_users/org.couchdb.user:" . $username);
+            if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
+            {
+                $rev = $response_data['rev'];
+            }
+        }
+        $response = $this->client->request("PUT", "/_users/org.couchdb.user:" . $username, [
+            'json' => $doc,
+            'headers' => [
+                'If-Match' => $rev
+            ],
+        ]);
+        if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
+        {
+           return $response_data['rev'];
+        }
+        return false;
+    }
+
     /**
      * If you need to make a request that isn't supported by this library,
      * use this method to get the client to use.  Aimed at more advanced
