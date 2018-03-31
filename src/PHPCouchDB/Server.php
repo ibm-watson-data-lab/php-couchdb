@@ -173,11 +173,15 @@ class Server
             'roles' => $roles,
             'type' => 'user',
         ];
-       $response = $this->client->request("PUT", "/_users/org.couchdb.user:" . $username, ['json' => $doc]);
-       if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
-       {
-           return $response_data['rev'];
-       }
+        try {
+            $response = $this->client->request("PUT", "/_users/org.couchdb.user:" . $username, ['json' => $doc]);
+            if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
+            {
+                return $response_data['rev'];
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return false;
+        }
        return false;
     }
 
@@ -194,17 +198,21 @@ class Server
                 $rev = $response_data['rev'];
             }
         }
-        $response = $this->client->request("PUT", "/_users/org.couchdb.user:" . $username, [
-            'json' => $doc,
-            'headers' => [
-                'If-Match' => $rev
-            ],
-        ]);
-        if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
-        {
-           return $response_data['rev'];
+        try{
+            $response = $this->client->request("PUT", "/_users/org.couchdb.user:" . $username, [
+                'json' => $doc,
+                'headers' => [
+                    'If-Match' => $rev
+                ],
+            ]);
+            if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
+            {
+            return $response_data['rev'];
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return false;
         }
-        return false;
+    return false;
     }
 
     /**
