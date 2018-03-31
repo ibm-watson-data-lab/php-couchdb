@@ -264,7 +264,7 @@ class Server
             {
                 if($response->getStatusCode() == 409)
                 {
-                    throw new Exception\ServerException("Your connection doesn't have privileges to update the user password");
+                    throw new Exception\ServerException("Bad permissions");
                 }
                 throw new Exception\ServerException("Something went wrong: " . $response->getStatusCode());
             }
