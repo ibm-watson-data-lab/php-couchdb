@@ -227,8 +227,7 @@ class Server
             try
             {
             	$response = $this->client->request("GET", "/_users/org.couchdb.user:" . $username);
-                if ($response->getStatusCode() == 200 
-                    && $response_data = json_decode($response->getBody(), true))
+                if ($response->getStatusCode() == 200 && $response_data = json_decode($response->getBody(), true))
            	    {
                     $rev = $response_data['_rev'];
                 }
