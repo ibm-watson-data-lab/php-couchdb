@@ -164,7 +164,16 @@ class Server
             'Database doesn\'t exist, include "create_if_not_exists" parameter to create it'
         );
     }
-
+    /**
+     * Create a database user and return the revision of the user record (for later updating)
+     *
+     * @author David Baltusavich <david@synatree.com>
+     * @param $username the new username
+     * @param $password the password to setup for the user
+     * @param optional $roles if you want to specify the roles on the server for the user. defaults to []
+     * @return string revision string
+     * @throws \PHPCouchDB\Exception\ServerException if there's a problem
+     */
     public function createUser($username, $password, $roles = [])
     {
         $doc = [
@@ -179,26 +188,61 @@ class Server
             {
                 return $response_data['rev'];
             }
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } 
+        catch (\GuzzleHttp\Exception\ClientException $e) {
             return false;
         }
-       return false;
+	    throw new Exception\ServerException(
+            'Problem creating user'
+        );
+
     }
 
-    public function updateUser($username, $password, $rev = false)
+    /**
+     * Update a database user and return the revision of the user record (for further updating)
+     *
+     * @author David Baltusavich <david@synatree.com>
+     * @param $username the new username
+     * @param $password the new password
+     * @param optional $rev the revision of the current record (saves a query if you can specify this)
+     * @param optional $roles if you want to specify the roles on the server for the user. defaults to []
+     * @return string revision string
+     * @throws \PHPCouchDB\Exception\ServerException if there's a problem
+     */
+    public function updateUser($username, $password, $rev = false, $roles = [])
     {
         $doc = [
             'password' => $password,
+            'type' => 'user',
+            'name' => $username,
+            'roles' => $roles,
         ];
         if(!$rev)
         {
-            $response = $this->client->request("GET", "/_users/org.couchdb.user:" . $username);
-            if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
+            try
             {
-                $rev = $response_data['rev'];
+            	$response = $this->client->request("GET", "/_users/org.couchdb.user:" . $username);
+            	if ($response->getStatusCode() == 200 && $response_data = json_decode($response->getBody(), true))
+           	    {
+                    $rev = $response_data['_rev'];
+                }
+                else
+                {
+                    if($response->getStatusCode() == 404)
+                    {
+                        throw new Exception\ServerException("Your connection doesn't have privileges to confirm the user, or the user does not exist");
+                    }
+                    throw new Exception\ServerException("Something went wrong: " . $response->getStatusCode());
+                }
+            } 
+            catch (\GuzzleHttp\Exception\ClientException $e){
+		        throw new Exception\ServerException(
+                    'Could not retrieve the username provided'
+                );
             }
         }
-        try{
+        try
+        {
             $response = $this->client->request("PUT", "/_users/org.couchdb.user:" . $username, [
                 'json' => $doc,
                 'headers' => [
@@ -207,12 +251,23 @@ class Server
             ]);
             if ($response->getStatusCode() == 201 && $response_data = json_decode($response->getBody(), true))
             {
-            return $response_data['rev'];
+            	return $response_data['rev'];
             }
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            return false;
+            else
+            {
+                if($response->getStatusCode() == 409)
+                {
+                    throw new Exception\ServerException("Your connection doesn't have privileges to update the user password");
+                }
+                throw new Exception\ServerException("Something went wrong: " . $response->getStatusCode());
+            }
+        } 
+        catch (\GuzzleHttp\Exception\ClientException $e)
+        {
+            throw new Exception\ServerException(
+                    "Failing Updating User: " . $e->getMessage() . "REV: $rev"
+                );
         }
-    return false;
     }
 
     /**
