@@ -172,7 +172,7 @@ class Server
      *
      * @param  $username the new username
      * @param  $password the password to setup for the user
-     * @param  optional                                    $roles if you want to specify the roles on the server for the user. defaults to []
+     * @param  optional $roles if you want to specify the roles on the server for the user. defaults to []
      * @return string revision string
      * @throws \PHPCouchDB\Exception\ServerException if there's a problem
      */
@@ -203,8 +203,8 @@ class Server
      *
      * @param  $username the new username
      * @param  $password the new password
-     * @param  optional                  $rev   the revision of the current record (saves a query if you can specify this)
-     * @param  optional                  $roles if you want to specify the roles on the server for the user. defaults to []
+     * @param  optional $rev   the revision of the current record (saves a query if you can specify this)
+     * @param  optional $roles if you want to specify the roles on the server for the user. defaults to []
      * @return string revision string
      * @throws \PHPCouchDB\Exception\ServerException if there's a problem
      */
