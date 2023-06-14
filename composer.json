@@ -1,13 +1,17 @@
 {
-    "name": "ibm-watson-data-lab/php-couchdb",
+    "name": "agencychief/php-couchdb",
     "description": "Library for easily talking to CouchDB from PHP",
     "type": "library",
     "license": "Apache-2.0",
-    "version": "0.1.2",
+    "version": "0.2",
     "authors": [
         {
             "name": "Lorna Jane Mitchell",
             "email": "lorna@lornajane.net"
+        },
+        {
+            "name": "Dietrich Gottfried Schmidt",
+            "email": "dietric@gmail.com"
         }
     ],
     "autoload": {
