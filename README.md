@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ibm-watson-data-lab/php-couchdb.svg?branch=master)](https://travis-ci.org/ibm-watson-data-lab/php-couchdb)
+[![Build Status](https://travis-ci.org/agencychief/php-couchdb.svg?branch=master)](https://travis-ci.org/agencychief/php-couchdb)
 
 # PHP CouchDB
 
@@ -11,12 +11,12 @@ A lightweight library to make it very easy to work with [CouchDB](http://couchdb
 It's recommended to install this library using [Composer](https://getcomposer.org/):
 
 ```
-composer require ibm-watson-data-lab/php-couchdb
+composer require agencychief/php-couchdb
 ```
 
 ## Usage
 
-Here's the tl;dr of how to begin.  For more detailed examples, see the [wiki](https://github.com/ibm-watson-data-lab/php-couchdb/wiki) and/or generate the API docs with `composer docs`
+Here's the tl;dr of how to begin.  For more detailed examples, see the [wiki](https://github.com/agencychief/php-couchdb/wiki) and/or generate the API docs with `composer docs`
 
 ```php
 <?php
